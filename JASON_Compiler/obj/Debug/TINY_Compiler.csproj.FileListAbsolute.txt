@@ -1,0 +1,10 @@
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.exe.config
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.exe
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.pdb
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\JASON_Compiler.Form1.resources
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\JASON_Compiler.Properties.Resources.resources
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\TINY_Compiler.csproj.GenerateResource.cache
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\TINY_Compiler.csproj.CoreCompileInputs.cache
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\JASON_Compiler.exe
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\JASON_Compiler.pdb
+C:\Users\momen\Downloads\Students [2023-2024] JASON_Compiler_Template - For Students\[2021-2022] JASON_Compiler_Template\[2021-2022] JASON_Compiler_Template\JASON_Compiler\obj\Debug\TINY_Compiler.csproj.AssemblyReference.cache

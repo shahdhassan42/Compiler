@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace JASON_Compiler
 {
-    public static class JASON_Compiler
+    public static class TINY_Compiler
     {
-        public static Scanner Jason_Scanner = new Scanner();
+        public static Scanner TINY_Scanner = new Scanner();
        
         public static List<string> Lexemes= new List<string>();
         public static List<Token> TokenStream = new List<Token>();
@@ -18,7 +18,7 @@ namespace JASON_Compiler
         {
             //Scanner
  
-            Jason_Scanner.StartScanning(SourceCode);
+           TINY_Scanner.StartScanning(SourceCode);
             //Parser
             //Sematic Analysis
         } 
