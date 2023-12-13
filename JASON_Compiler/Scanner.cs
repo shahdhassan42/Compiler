@@ -13,7 +13,8 @@ public enum Token_Class
     ANDOp, OROp,
     Dot,Comma, LParanthesis, RParanthesis,LBracket,RBracket, AssignmentOp,SemiColon,
     Int, Float, String,
-    Idenifier, Number, StringLine,Main
+    Idenifier, Number, StringLine,Main,End,
+    Datatype
 }
 namespace JASON_Compiler
 {
@@ -45,6 +46,7 @@ namespace JASON_Compiler
             Reserved_Keywords.Add("return", Token_Class.Return);
             Reserved_Keywords.Add("endl", Token_Class.Endl);
             Reserved_Keywords.Add("main", Token_Class.Main);
+            Reserved_Keywords.Add("end", Token_Class.End);
 
             Operator.Add("+", Token_Class.PlusOp);
             Operator.Add("–", Token_Class.MinusOp);

@@ -10,5 +10,6 @@ namespace JASON_Compiler
     public static class Errors
     {
        public static List<string> Error_List = new List<string>();
+        public static List<string> Error_List_parser = new List<string>();
     }
 }

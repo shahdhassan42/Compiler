@@ -20,11 +20,15 @@ namespace JASON_Compiler
         private void button1_Click(object sender, EventArgs e)
         {
             textBox2.Clear();
+            textBox3.Clear();
             string Code = textBox1.Text;
             TINY_Compiler.Start_Compiling(Code);
             PrintTokens();
             PrintErrors();
+            PrintErrors_parser();
             Errors.Error_List.Clear();
+            Errors.Error_List_parser.Clear();
+
         }
         void PrintTokens()
         {
@@ -40,6 +44,14 @@ namespace JASON_Compiler
             {
                 textBox2.Text += Errors.Error_List[i];
                 textBox2.Text += "\r\n";
+            }
+        }
+        void PrintErrors_parser()
+        {
+            for (int i = 0; i < Errors.Error_List_parser.Count; i++)
+            {
+                textBox3.Text += Errors.Error_List_parser[i];
+                textBox3.Text += "\r\n";
             }
         }
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -59,6 +71,11 @@ namespace JASON_Compiler
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
         {
 
         }
