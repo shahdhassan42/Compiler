@@ -26,9 +26,9 @@ namespace JASON_Compiler
             PrintTokens();
             PrintErrors();
             PrintErrors_parser();
+            treeView1.Nodes.Add(Parser.PrintParseTree(TINY_Compiler.treeroot));
             Errors.Error_List.Clear();
             Errors.Error_List_parser.Clear();
-
         }
         void PrintTokens()
         {
@@ -68,6 +68,8 @@ namespace JASON_Compiler
         {
             dataGridView1.Rows.Clear();
             TINY_Compiler.TokenStream.Clear();
+            treeView1.Nodes.Clear();
+            
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)

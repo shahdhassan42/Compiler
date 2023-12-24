@@ -13,7 +13,7 @@ namespace JASON_Compiler
         public static List<string> Lexemes= new List<string>();
         public static List<Token> TokenStream = new List<Token>();
         public static Parser Tiny_Parser = new Parser();
-
+        public static Node treeroot;
 
         public static void Start_Compiling(string SourceCode) //character by character
         {
@@ -22,8 +22,8 @@ namespace JASON_Compiler
            TINY_Scanner.StartScanning(SourceCode);
             //Parser
             Tiny_Parser.StartParsing(TokenStream);
-           // treeroot = Tiny_Parser.root;
-            //Sematic Analysis
+            treeroot = Tiny_Parser.root;
+         
         } 
 
 

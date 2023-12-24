@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 namespace JASON_Compiler
 {
-
     public class Node
     {
         public List<Node> Children = new List<Node>();
@@ -18,8 +17,6 @@ namespace JASON_Compiler
             this.Name = N;
         }
     }
-
-
 
     public class Parser
     {
@@ -38,52 +35,56 @@ namespace JASON_Compiler
             return root;
         }
 
-
         public class Flag
         {
             public static bool out_of_count = false;
             public static bool found_return = false;
+            public static int found_main = 0;
         }
 
-
-        //done
         Node Program()
         {
-            // completed
-            // Program → Function_statements Main_function
+            // Program -> Main_Function Program’ 
 
             if (Flag.out_of_count == true) { return null; }
 
             Node program = new Node("Program");
-            //if (TokenStream[InputPointer].token_type== Token_Class.Int && TokenStream[InputPointer+1].token_type == Token_Class.Main)
-            //{
+            if (TokenStream[InputPointer].token_type== Token_Class.Int &&
+                TokenStream[InputPointer+1].token_type == Token_Class.Main &&
+                (InputPointer+1)<TokenStream.Count)
+            {
                 program.Children.Add(Main_function());
                 program.Children.Add(Program_dash());
-            //}
-            //else 
-            //{
-            //    program.Children.Add(Program_dash());
-            //    program.Children.Add(Main_function());
-            //}
+            }
+            else 
+            {
+                program.Children.Add(Program_dash());
+            }
             return program;
         }
 
-        //done
         Node Program_dash()
         {
-            // completed
-            // Program → Function_statements Main_function
+            //Program’ -> Function_Statement Program’ | ɛ
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node program_dash = new Node("Program_dash");
             if (TokenStream[InputPointer].token_type == Token_Class.Float || TokenStream[InputPointer].token_type == Token_Class.Int ||
                 TokenStream[InputPointer].token_type == Token_Class.String)
             {
                 program_dash.Children.Add(Function_statement());
-
-                program_dash.Children.Add(Program_dash());
+                if ((InputPointer + 1) < TokenStream.Count)
+                {
+                    if (TokenStream[InputPointer + 1].token_type != Token_Class.Main)
+                    {
+                        program_dash.Children.Add(Program_dash());
+                    }
+                    else
+                    {
+                        program_dash.Children.Add(Main_function());
+                    }
+                }
             }
             else
             {
@@ -92,11 +93,9 @@ namespace JASON_Compiler
             return program_dash;
         }
 
-        //done
         Node Function_statement()
         {
-            // completed
-            // Function_statement → Function_declaration Function_body | 𝜀
+            // Function_Statement -> Function_Declaration Function_Body
 
             if (Flag.out_of_count == true) { return null; }
             Node function_statement = new Node("Function_statement");
@@ -105,13 +104,12 @@ namespace JASON_Compiler
             return function_statement;
         }
 
-        //done
         Node Function_declaration()
         {
-            // completed
-            // Function _declaration → Datatype identifier (Parameters)
+            // Function_Declaration -> Datatype FunctionName "(" Parameter_List | ɛ ")"
 
             if (Flag.out_of_count == true) { return null; }
+
             Node function_declaration = new Node("Function_declaration");
             function_declaration.Children.Add(Datatype());
             function_declaration.Children.Add(match(Token_Class.Idenifier));
@@ -125,11 +123,9 @@ namespace JASON_Compiler
             return function_declaration;
         }
 
-        //done
         Node Function_body()
         {
-            // completed
-            // Function _body → { Statements Return_statement }
+            // Function_Body -> "{" Statement_List Return_Statement "}"
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -149,11 +145,9 @@ namespace JASON_Compiler
             return function_body;
         }
 
-        //done
         Node Main_function()
         {
-            // completed
-            // Main_function → Datatype main() Function_body
+            // Main_Function -> int "main" "()" Function_Body
 
             if (Flag.out_of_count == true)
             {
@@ -162,23 +156,21 @@ namespace JASON_Compiler
                 return null;
             }
 
-
             Node main_function = new Node("Main_function");
             main_function.Children.Add(match(Token_Class.Int));
             main_function.Children.Add(match(Token_Class.Main));
             main_function.Children.Add(match(Token_Class.LBracket));
             main_function.Children.Add(match(Token_Class.RBracket));
             main_function.Children.Add(Function_body());
+            Flag.found_main++;
             return main_function;
         }
 
         Node Datatype()
         {
-            // Completed
-            // Datatype → int | float | string
+            // Datatype -> int | float | string
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node datatype = new Node("Datatype");
             if (TokenStream[InputPointer].token_type == Token_Class.Int || TokenStream[InputPointer].token_type == Token_Class.Float || TokenStream[InputPointer].token_type == Token_Class.String)
@@ -193,14 +185,13 @@ namespace JASON_Compiler
             return datatype;
         }
 
-        //done
         Node Arithmatic_Operator()
         {
+            // Arithmatic_Operator -> + | - | * | \
             Node arithmatic_Operator = new Node("Arithmatic_Operator");
 
             if (Flag.out_of_count == true) { return null; }
 
-            
             if (TokenStream[InputPointer].token_type == Token_Class.PlusOp || TokenStream[InputPointer].token_type == Token_Class.MinusOp ||
                 TokenStream[InputPointer].token_type == Token_Class.DivideOp || TokenStream[InputPointer].token_type == Token_Class.MultiplyOp)
             {
@@ -209,14 +200,11 @@ namespace JASON_Compiler
             return arithmatic_Operator;
         }
 
-        //done
         Node Statement_List()
         {
-            // completed
-            // Statements → Statement Statements’
+            // Statement_List -> Statement Statement_List’
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node statement_List = new Node("Statement_List");
             statement_List.Children.Add(Statement());
@@ -224,10 +212,9 @@ namespace JASON_Compiler
             return statement_List;
         }
 
-        //done
         Node Statement()
         {
-            // Statement → Write_statement | Read_statement | Assignment_statement | Declaration_statement | If_statement |Repeat_statement | Function_call
+            // Statement -> Write_Statement | Read_Statement | Assignment_Statement | Declaration_Statement | Return_Statement | If_Statement | Repeat_statement | Function_Call 
             if (Flag.out_of_count == true) { return null; }
 
             Node statement = new Node("Statement");
@@ -246,7 +233,6 @@ namespace JASON_Compiler
             else if (TokenStream[InputPointer].token_type == Token_Class.Int || TokenStream[InputPointer].token_type == Token_Class.Float || TokenStream[InputPointer].token_type == Token_Class.String)
             {
                 statement.Children.Add(Declaration_statement());
-                Console.WriteLine("in declaration");
             }
             else if (TokenStream[InputPointer].token_type == Token_Class.Return)
             {
@@ -265,16 +251,14 @@ namespace JASON_Compiler
             else if (TokenStream[InputPointer].token_type == Token_Class.Idenifier && TokenStream[InputPointer + 1].token_type == Token_Class.LBracket) 
             {
                 statement.Children.Add(Function_call());
-
             }
 
             return statement;
         }
 
-        ///done
         Node Statement_List_dash()
         {
-            // Statements’ → Statement Statements’ | 𝜀
+            // Statement_List’ -> Statement Statement_List’ | ɛ
             if (Flag.out_of_count == true) { return null; }
 
             Node statement_List_dash = new Node("Statement_List_dash");
@@ -302,11 +286,9 @@ namespace JASON_Compiler
             }
         }
 
-        //done
         Node Return_statement()
         {
-            // completed    
-            // Return_statement → return Expression ;
+            // Return_Statement -> "return" Expression ";"
 
             if (Flag.out_of_count == true)
             {
@@ -320,15 +302,11 @@ namespace JASON_Compiler
             return return_statement;
         }
 
-        //done
         Node Write_statement()
         {
-            // completed    
-            // Write_statement → write Write_statement_Dash
-
+            // Write_Statement -> "write" ( Expression | "endl" ) ";"
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node write_statement = new Node("Write_statement");
             write_statement.Children.Add(match(Token_Class.Write));
@@ -346,15 +324,11 @@ namespace JASON_Compiler
             return write_statement;
         }
 
-        //done
         Node Read_statement()
         {
-            // completed
-            // Read_statement → read identifier ;
-
+            // Read_Statement -> "read" Identifier ";"
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node read_statement = new Node("Read_statement");
             read_statement.Children.Add(match(Token_Class.Read));
@@ -363,10 +337,9 @@ namespace JASON_Compiler
             return read_statement;
         }
 
-        //done
         Node Expression()
         {
-            // Expression → stringLine | Term | Equation
+            // Expression -> Term Expression’ | StringLine | “(“Equation”)” Equation’
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -395,10 +368,9 @@ namespace JASON_Compiler
             return expression;
         }
 
-        //done
         Node Expression_dash()
         {
-           
+            //Expression’ ->  ɛ | Equation’
             if (Flag.out_of_count == true) { return null; }
 
             Node expression_dash = new Node("Expression_dash");
@@ -415,33 +387,37 @@ namespace JASON_Compiler
             return expression_dash;
         }
 
-        //done
         Node Term()
         {
-            // Term → number | identifier | Function_
+            // Term -> Identifier Term’ |Number
             if (Flag.out_of_count == true) { return null; }
             Node term = new Node("Term");
             if (TokenStream[InputPointer].token_type == Token_Class.Number)
             {
                 term.Children.Add(match(Token_Class.Number));
             }
-            else if (TokenStream[InputPointer].token_type == Token_Class.Idenifier &&
-                TokenStream[InputPointer+3].token_type != Token_Class.Comma && TokenStream[InputPointer + 2].token_type != Token_Class.RBracket)
+            else if ((InputPointer+3)<TokenStream.Count)
             {
-                term.Children.Add(match(Token_Class.Idenifier));
-                term.Children.Add(Term_dash());
+                if (TokenStream[InputPointer].token_type == Token_Class.Idenifier &&
+                TokenStream[InputPointer + 3].token_type != Token_Class.Comma &&
+                TokenStream[InputPointer + 2].token_type != Token_Class.RBracket)
+                {
+                    term.Children.Add(match(Token_Class.Idenifier));
+                    term.Children.Add(Term_dash());
+                }
+                else if (TokenStream[InputPointer].token_type == Token_Class.Idenifier &&
+                               (TokenStream[InputPointer + 2].token_type == Token_Class.RBracket || TokenStream[InputPointer + 3].token_type == Token_Class.Comma))
+                {
+                    term.Children.Add(Function_call());
+                }
             }
-            else if(TokenStream[InputPointer].token_type == Token_Class.Idenifier && 
-                (TokenStream[InputPointer + 2].token_type == Token_Class.RBracket || TokenStream[InputPointer + 3].token_type == Token_Class.Comma))
-            {
-                term.Children.Add(Function_call());
-            }
+            
             return term;
         }
-        //done
+
         Node Term_dash()
-        {//z1 := z1 + sum (1,a)
-            // Term → number | identifier | Function_call
+        {
+            // TTerm’ -> ɛ | “(“ Identifier_list | ɛ “)”
             if (Flag.out_of_count == true) { return null; }
             Node term_dash = new Node("Term_dash");
             if(TokenStream[InputPointer].token_type == Token_Class.LBracket)
@@ -460,11 +436,9 @@ namespace JASON_Compiler
             return term_dash;
         }
 
-        //done
         Node Function_call()
         {
-            // completed
-            // Function_call → identifier (Identifier_list | 𝜀) 
+            // Function_call → Identifier “(“ Arguments_list | ɛ “)”  
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -487,6 +461,7 @@ namespace JASON_Compiler
 
         Node Argument()
         {
+            //Argument -> Number | Identifier
             if (Flag.out_of_count == true) { return null; }
             Node argument = new Node("Argument");
             if(TokenStream[InputPointer].token_type == Token_Class.Number)
@@ -501,6 +476,7 @@ namespace JASON_Compiler
         }
         Node Argument_list()
         {
+            //Arguments_list -> Argument Arguments_list’
             if (Flag.out_of_count == true) { return null; }
             Node argument_list = new Node("Argument_list");
             argument_list.Children.Add(Argument());
@@ -509,6 +485,7 @@ namespace JASON_Compiler
         }
         Node Argument_list_dash()
         {
+            //Arguments_list’ -> “,” Argument Arguments_list’ | ɛ
             if (Flag.out_of_count == true) { return null; }
             Node argument_list_dash = new Node("Argument_list_dash");
             if (TokenStream[InputPointer].token_type == Token_Class.Comma)
@@ -524,13 +501,9 @@ namespace JASON_Compiler
             }
            
         }
-        //done
         Node Identifier_list()
         {
-            // completed
-            // Identifier_list → Id Identifier_list_Dash
-
-
+            //Identifier_list → Identifier Identifier_list’ 
             if (Flag.out_of_count == true) { return null; }
             Node identifier_list = new Node("Identifier_list");
             identifier_list.Children.Add(match(Token_Class.Idenifier));
@@ -538,15 +511,11 @@ namespace JASON_Compiler
             return identifier_list;
         }
 
-        //done
         Node Identifier_list_Dash()
         {
-            // completed
-            // Identifier_list’ → , Id Identifier_list’ | eplson
-
+            // Identifier_list’ → “,” Identifier Identifier_list’ | ɛ
 
             if (Flag.out_of_count == true) { return null; }
-
 
             Node identifier_list_Dash = new Node("Identifier_list_Dash");
             if (TokenStream[InputPointer].token_type == Token_Class.Comma)
@@ -572,13 +541,9 @@ namespace JASON_Compiler
 
         Node ConditionOp()
         {
-            // completed
-            // ConditionOp → notEqualOp | equalOp | lessThanOp |greaterThanOp
-
+            // ConditionOp -> notEqualOp | equalOp | lessThanOp |greaterThanOp
 
             if (Flag.out_of_count == true) { return null; }
-
-
 
             Node conditionOp = new Node("ConditionOp");
             if (TokenStream[InputPointer].token_type == Token_Class.NotEqualOp)
@@ -600,16 +565,11 @@ namespace JASON_Compiler
             return conditionOp;
         }
 
-        //done
         Node BooleanOp()
         {
-            // completed
-            //  BooleanOp → andOp | orOp
-
+            //  BooleanOp -> andOp | orOp
 
             if (Flag.out_of_count == true) { return null; }
-
-
 
             Node booleanOp = new Node("BooleanOp");
             if (TokenStream[InputPointer].token_type == Token_Class.ANDOp || TokenStream[InputPointer].token_type == Token_Class.OROp)
@@ -619,9 +579,9 @@ namespace JASON_Compiler
             return booleanOp;
         }
 
-        //done
         Node Equation()
         {
+            //Equation -> “(“Equation”)” Equation’ | Term Equation’ 
             if (Flag.out_of_count == true) { return null; }
 
             Node equation = new Node("Equation");
@@ -630,7 +590,6 @@ namespace JASON_Compiler
             {
                 equation.Children.Add(match(Token_Class.LBracket));
                 equation.Children.Add(Equation());
-
                 equation.Children.Add(match(Token_Class.RBracket));
                 equation.Children.Add(Equation_Dash());
             }
@@ -643,15 +602,12 @@ namespace JASON_Compiler
             return equation;
         }
 
-        //done
         Node Equation_Dash()
         {
-
+            //Equation’ -> Arithmatic_Operator Equation Equation’ | ɛ
             if (Flag.out_of_count == true) { return null; }
 
-
             Node equation_dash = new Node("Equation_Dash");
-
             if (TokenStream[InputPointer].token_type == Token_Class.PlusOp || TokenStream[InputPointer].token_type == Token_Class.MinusOp || TokenStream[InputPointer].token_type == Token_Class.DivideOp || TokenStream[InputPointer].token_type == Token_Class.MultiplyOp)
             {
                 equation_dash.Children.Add(Arithmatic_Operator());
@@ -665,11 +621,9 @@ namespace JASON_Compiler
             }
         }
 
-        //done
         Node Condition()
         {
-            // completed
-            // Condition → identifier ConditionOp Term
+            // Condition -> Identifier Condition_Operator Term
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -680,11 +634,9 @@ namespace JASON_Compiler
             return condition;
         }
 
-        //done
         Node Condition_statement()
         {
-            // completed
-            // Condition_statement → Condition Condition_statement_Dash
+            // Condition_statement -> Condition Condition_statement’
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -694,9 +646,9 @@ namespace JASON_Compiler
             return condition_statement;
         }
 
-        //done
         Node Condition_statement_Dash()
         {
+            //Condition_statement’ -> ɛ | Boolean_operator Condition
             if (Flag.out_of_count == true) { return null; }
 
             Node condition_statement_Dash = new Node("Condition_statement_Dash");
@@ -711,26 +663,16 @@ namespace JASON_Compiler
                     condition_statement_Dash.Children.Add(remainingConditions);
                 }
             }
-
             return condition_statement_Dash.Children.Count > 0 ? condition_statement_Dash : null;
         }
-        // ============================================== Gaber end =======================================================
-
-
-        // ============================================== Nour start =======================================================
-
-        //done
+       
         Node Assignment_statement()
         {
-            // completed
-            // Assignment_statement → identifier assignmentOp Expression ;
-
+            // Assignment_Statement -> Identifier ":=" Expression”;” ;
 
             if (Flag.out_of_count == true) { return null; }
 
-
             Node assignment_statement = new Node("Assignment_statement");
-
             assignment_statement.Children.Add(match(Token_Class.Idenifier));
             assignment_statement.Children.Add(match(Token_Class.AssignmentOp));
             assignment_statement.Children.Add(Expression());
@@ -738,12 +680,9 @@ namespace JASON_Compiler
             return assignment_statement;
         }
 
-        //done
         Node Declaration_statement()
         {
-            // completed
-            // Declaration_statement → Datatype Identifier_list ;
-
+            // Declaration_Statement -> Datatype Declaration_Statement’ 
 
             if (Flag.out_of_count == true) { return null; }
 
@@ -754,15 +693,10 @@ namespace JASON_Compiler
             return declaration_statement;
         }
 
-        //done
         Node Declaration_statement_dash()
         {
-            // completed
-            // Declaration_statement → Datatype Identifier_list ;
-
-
+            //Declaration_Statement’-> Identifier_List Declaration_Statement’’
             if (Flag.out_of_count == true) { return null; }
-
 
             Node declaration_statement_dash = new Node("Declaration_statement_dash");
             declaration_statement_dash.Children.Add(Identifier_list());
@@ -770,12 +704,9 @@ namespace JASON_Compiler
             return declaration_statement_dash;
         }
 
-        //done
         Node Declaration_statement_dash_dash()
         {
-            // completed
-            // Declaration_statement → Datatype Identifier_list ;
-
+            //Declaration_Statement’’-> “;” | “,” Assignment _list 
             if (Flag.out_of_count == true) { return null; }
 
             Node declaration_statement_dash_dash = new Node("Declaration_statement_dash_dash");
@@ -790,12 +721,9 @@ namespace JASON_Compiler
             }
             return declaration_statement_dash_dash;
         }
-        //done
         Node Assignment_List()
         {
-            // completed
-            // Declaration_statement → Datatype Identifier_list ;
-
+            //Assignment _list → Assignment_Statement Assignment _list’ 
             if (Flag.out_of_count == true) { return null; }
 
             Node assignment_List = new Node("Assignment_List");
@@ -805,12 +733,9 @@ namespace JASON_Compiler
 
             return assignment_List;
         }
-        //done
         Node Assignment_List_dash()
         {
-            // completed
-            // Declaration_statement → Datatype Identifier_list ;
-
+            //Assignment _list’ → “,” Assignment_Statement  Assignment _list’ | ɛ
             if (Flag.out_of_count == true) { return null; }
 
             Node assignment_List_dash = new Node("Assignment_List_dash");
@@ -827,34 +752,22 @@ namespace JASON_Compiler
             return assignment_List_dash;
         }
 
-        //done
         Node Else_statement()
         {
-            // completed
-            // Else_statement → else Statements end | 𝜀
-
-
+            //Else_Statement -> "else" Statement_List "end"
             if (Flag.out_of_count == true) { return null; }
-
 
             Node else_statement = new Node("Else_statement");
             else_statement.Children.Add(match(Token_Class.Else));
             else_statement.Children.Add(Statement_List());
             else_statement.Children.Add(match(Token_Class.End));
-
             return else_statement;
-           
         }
 
-        //done
         Node Else_if_statement()
         {
-            // completed
-            // Else_if_statement → elseif Condition_statement then Statements Ret_statement Else_statement end | �
-
-
+            //Else_If_Statement -> "elseif" Condition_Statement "then" Statement_List (Else_If_Statement | Else_Statement | "end")
             if (Flag.out_of_count == true) { return null; }
-
 
             Node else_if_statement = new Node("Else_if_statement");
             else_if_statement.Children.Add(match(Token_Class.Elseif));
@@ -873,21 +786,13 @@ namespace JASON_Compiler
             {
                 else_if_statement.Children.Add(match(Token_Class.End));
             }
-         
             return else_if_statement;
-            
-          
         }
 
-        //done
         Node If_statement()
         {
-            // completed
-            // If_statement → if Condition_statement then Statements Ret_statement Else_if_statement Else_statement end
-
-
+            //If_Statement -> "if" Condition_Statement "then" Statement_List (Else_If_Statement | Else_Statement | "end")
             if (Flag.out_of_count == true) { return null; }
-
 
             Node if_statement = new Node("If_statement");
             if_statement.Children.Add(match(Token_Class.If));
@@ -909,15 +814,10 @@ namespace JASON_Compiler
             return if_statement;
         }
 
-        //done
         Node Repeat_statement()
         {
-            // completed
-            // Repeat_statement → repeat Statements until Condition_statement
-
-
+            //Repeat_Statement -> "repeat" Statement_List "until" Condition_Statement
             if (Flag.out_of_count == true) { return null; }
-
 
             Node repeat_statement = new Node("Repeat_statement");
             repeat_statement.Children.Add(match(Token_Class.Repeat));
@@ -927,39 +827,31 @@ namespace JASON_Compiler
             return repeat_statement;
         }
 
-        // ============================================== Nour end =======================================================
-
-        // ============================================== Ruq start =======================================================
-        //done
         private Node Parameter()
         {
+            //Parameter -> Datatype Identifier
             if (Flag.out_of_count == true) { return null; }
 
             Node parameter = new Node("Parameter");
-
-            // Parameter -> Datatype Identifier
             parameter.Children.Add(Datatype());
             parameter.Children.Add(match(Token_Class.Idenifier));
 
             return parameter;
         }
 
-        //done
         Node Parameter_List()
         {
+            //Parameter_List-> Parameter Parameter_List’ 
             if (Flag.out_of_count == true) { return null; }
             Node Parameter_List = new Node("Parameter_List");
             Parameter_List.Children.Add(Parameter());
             Parameter_List.Children.Add(Parameter_List_dash());
             return Parameter_List;
         }
-        // ============================================== Ruq end =========================================================
-        // ================================================================================================================
-        // match : deal with tokens 
-
-        //done
+       
         private Node Parameter_List_dash()
         {
+            //Parameter_List’ -> “,” Parameter Parameter_List’ | ɛ
             Node parameter_List_dash = new Node("Parameter_List_dash");
 
             if (TokenStream[InputPointer].token_type == Token_Class.Comma)
@@ -978,8 +870,6 @@ namespace JASON_Compiler
         public Node match(Token_Class ExpectedToken)
         {
 
-            // if (Flag.isOfr == true && Flag.isSpecial == false) { return null; }
-
             if (InputPointer < TokenStream.Count)
             {
                 if (ExpectedToken == TokenStream[InputPointer].token_type)
@@ -990,7 +880,6 @@ namespace JASON_Compiler
                     {
                         Flag.out_of_count = true;
                     }
-
 
                     Node newNode = new Node(ExpectedToken.ToString());
 
@@ -1003,28 +892,40 @@ namespace JASON_Compiler
                         + ExpectedToken.ToString() + " and " +
                         TokenStream[InputPointer].token_type.ToString() +
                         "  found\r\n");
+                    if (Flag.found_main == 0)
+                    {
+                        Errors.Error_List_parser.Add("NO MAIN FOUND \n");
+                    }
                     InputPointer++;
 
                     if (InputPointer >= TokenStream.Count)
                     {
                         Flag.out_of_count = true;
-
                     }
-
                     return null;
                 }
             }
             else
             {
-                Errors.Error_List_parser.Add("Parsing Error: Expected "
-                        + ExpectedToken.ToString() + "\r\n");
+                Errors.Error_List_parser.Add("Parsing Error: Expected " + ExpectedToken.ToString() + "\r\n");
+                if (Flag.found_main == 0)
+                {
+                    Errors.Error_List_parser.Add("NO MAIN FOUND \n");
+                }
                 InputPointer++;
-
                 return null;
+            }
+
+            if (InputPointer==TokenStream.Count)
+            {
+                if(Flag.found_main==0)
+                {
+                    Errors.Error_List_parser.Add("NO MAIN FOUND \n");
+
+                }
             }
         }
 
-        // ================================================================================================================
         // Print Parse Tree
         public static TreeNode PrintParseTree(Node root)
         {
