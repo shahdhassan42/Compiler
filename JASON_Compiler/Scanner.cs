@@ -49,10 +49,10 @@ namespace JASON_Compiler
             Reserved_Keywords.Add("end", Token_Class.End);
 
             Operator.Add("+", Token_Class.PlusOp);
-            Operator.Add("–", Token_Class.MinusOp);
+            Operator.Add("-", Token_Class.MinusOp);
             Operator.Add("*", Token_Class.MultiplyOp);
             Operator.Add("/", Token_Class.DivideOp);
-            Operator.Add("-", Token_Class.MinusOperation);
+           // Operator.Add("–", Token_Class.MinusOperation);
 
             Operator.Add("=", Token_Class.EqualOp);
             Operator.Add("<", Token_Class.LessThanOp);
@@ -339,7 +339,7 @@ namespace JASON_Compiler
                 Tok.token_type = Token_Class.Number;
                 Tokens.Add(Tok);
             }
-            
+           
             else if (isString(Lex))
             {
                 Tok.token_type = Token_Class.StringLine;
